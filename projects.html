@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>项目 · Wennnnn</title>
+    
+    <style>
+        /* ========== 全局重置 & 梦幻背景 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Text', 'PingFang SC', Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background-image: url('background2.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 56px;
+            padding: 32px 40px;
+            backdrop-filter: brightness(0.98);
+        }
+
+        /* ========== 左侧面板：头像 + 名字 ========== */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 1.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+            transform: translateX(-20px);
+        }
+
+        .avatar-glass {
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(14px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08);
+            transition: all 0.25s ease;
+        }
+
+        .avatar-glass:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.38);
+        }
+
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(74, 144, 226, 0.85);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        .name-below {
+            text-align: center;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .name-below h1 {
+            font-size: 2.4rem;
+            font-weight: 650;
+            background: linear-gradient(135deg, #1f2b38, #2c3e50);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            backdrop-filter: blur(4px);
+            border-radius: 48px;
+            display: inline-block;
+            padding: 0 6px;
+        }
+
+        /* ========== 右侧内容区（只显示提示卡片） ========== */
+        .right-content {
+            max-width: 460px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .notice-card {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 30px 40px;
+            text-align: center;
+            color: #2c3e50;
+            font-family: 'Courier New', monospace;
+            font-weight: 500;
+            font-size: 1.2rem;
+            opacity: 0;
+            animation: fadeInUp 1.2s ease forwards;
+            animation-delay: 0.3s;
+        }
+.projects-title {
+    font-size: 3rem;
+    font-weight: 700;
+    text-align: center;
+    background: linear-gradient(135deg, #1f2b38, #2c3e50);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
+    margin-bottom: 16px;
+    letter-spacing: 2px;
+    opacity: 0;
+    animation: fadeInUp 1s ease forwards;
+    animation-delay: 0.1s;
+}
+
+/* 悬浮气泡导航栏 - 位于右上角 */
+.floating-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 1100;
+}
+
+.nav-bubble {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    border-radius: 60px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    text-decoration: none;
+    font-family: 'Segoe UI', system-ui;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+
+.nav-bubble:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* 移动端适配 */
+@media (max-width: 680px) {
+    .floating-nav {
+        top: 10px;
+        right: 10px;
+        gap: 8px;
+    }
+    .nav-bubble {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+.page-title {
+    position: fixed;
+    top: 100px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 4.5rem;          /* 从 3rem 增加到 4.5rem */
+    font-weight: 800;
+    color: #2c3e50;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(16px);
+    border-radius: 100px;       /* 适当增大圆角 */
+    padding: 16px 56px;         /* 增加内边距适应大字体 */
+    text-align: center;
+    z-index: 1100;
+    white-space: nowrap;
+    font-family: 'Segoe UI', system-ui;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+    letter-spacing: 6px;
+    opacity: 0;
+    animation: fadeInUp 0.8s ease forwards;
+    animation-delay: 0.2s;
+}
+
+/* 移动端适配：适当缩小但依然醒目 */
+@media (max-width: 680px) {
+    .page-title {
+        top: 80px;
+        font-size: 2.5rem;      /* 手机上也大一些 */
+        padding: 10px 28px;
+        letter-spacing: 3px;
+    }
+}
+
+        /* 右上角统计卡片 */
+        .top-stats {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(12px);
+            border-radius: 60px;
+            padding: 8px 18px;
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #1e2f3f;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .top-stats span {
+            font-weight: 700;
+            margin-left: 4px;
+        }
+
+        .like-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #e25555;
+            transition: transform 0.2s;
+            font-family: inherit;
+        }
+
+        .like-btn:hover {
+            transform: scale(1.05);
+        }
+
+        .like-btn:active {
+            transform: scale(0.95);
+        }
+
+        .like-btn.disabled {
+            opacity: 0.5;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* 音乐播放器（固定右下角） */
+        .music-player {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            z-index: 999;
+            margin-top: 0;
+        }
+
+        .music-btn {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            border: none;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            padding: 4px;
+        }
+
+        .record-disc {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            overflow: hidden;
+            background: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .rotating .record-disc {
+            animation: spin 2s linear infinite;
+        }
+
+        .music-btn:hover {
+            background: rgba(255, 255, 255, 0.55);
+            transform: scale(1.05);
+        }
+
+        .music-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* 入场动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 调整 body 顶部内边距，避免被导航栏遮挡 */
+        body {
+            padding-top: 76px;
+        }
+        @media (min-width: 781px) {
+            body {
+                padding-top: 88px;
+            }
+        }
+        @media (max-width: 780px) {
+            body {
+                padding-top: 70px;
+            }
+        }
+
+        /* 背景柔光层 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 245, 0.08), rgba(0, 0, 0, 0.02));
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 780px) {
+            body {
+                flex-direction: column;
+                gap: 32px;
+                padding: 40px 24px;
+            }
+            .avatar-glass {
+                width: 130px;
+                height: 130px;
+            }
+            .avatar {
+                width: 92px;
+                height: 92px;
+            }
+            .name-below h1 {
+                font-size: 2rem;
+            }
+            .notice-card {
+                padding: 20px 30px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .avatar-glass {
+                width: 112px;
+                height: 112px;
+            }
+            .avatar {
+                width: 80px;
+                height: 80px;
+            }
+            .name-below h1 {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- 悬浮气泡导航栏 -->
+<div class="floating-nav">
+    <a href="index.html" class="nav-bubble">主页</a>
+    <a href="projects.html" class="nav-bubble">项目</a>
+    <a href="blog.html" class="nav-bubble">博客</a>
+    <a href="about.html" class="nav-bubble">关于</a>
+</div>
+
+<!-- 页面正上方大标题 -->
+<div class="page-title">Projects</div>
+
+    <!-- 右上角统计卡片 -->
+    <div class="top-stats">
+        <div>访客数 <span id="busuanzi_value_site_pv">0</span></div>
+        <div class="like-area">
+            <button id="likeBtn" class="like-btn">❤️ <span id="likeCount">0</span></button>
+        </div>
+    </div>
+
+    <!-- 左侧头像+名字 -->
+    <div class="left-panel">
+        <div class="avatar-glass">
+            <img class="avatar" src="avatar.jpg" alt="头像">
+        </div>
+        <div class="name-below">
+            <h1>Wennnnn</h1>
+        </div>
+    </div>
+
+<div class="right-content">
+    <div class="notice-card">
+        ✨ 项目页面筹备中，敬请期待 ✨
+    </div>
+</div>
+
+    <!-- 音乐播放器（固定右下角） -->
+    <div class="music-player">
+        <button id="playMusicBtn" class="music-btn" title="播放/暂停">
+            <div class="record-disc">
+                <img class="user-photo" src="avatar.jpg" alt="唱片">
+            </div>
+        </button>
+        <audio id="bgMusic" loop src="frozen_heart.mp3"></audio>
+    </div>
+
+    <script>
+        // 音乐控制 JS
+        const playBtn = document.getElementById('playMusicBtn');
+        const audio = document.getElementById('bgMusic');
+        let isPlaying = false;
+        if (playBtn) {
+            playBtn.addEventListener('click', () => {
+                if (isPlaying) {
+                    audio.pause();
+                    playBtn.classList.remove('rotating');
+                    isPlaying = false;
+                } else {
+                    audio.play().catch(e => console.log('需要用户交互'));
+                    playBtn.classList.add('rotating');
+                    isPlaying = true;
+                }
+            });
+        }
+
+        // 点赞功能
+        const LIKE_NAMESPACE = 'wennnnn_space';
+        const LIKE_KEY = 'likes';
+        function fetchLikeCount() {
+            fetch(`https://api.countapi.xyz/get/${LIKE_NAMESPACE}/${LIKE_KEY}`)
+                .then(res => res.json())
+                .then(data => {
+                    const likeSpan = document.getElementById('likeCount');
+                    if (likeSpan) likeSpan.innerText = data.value;
+                }).catch(() => {});
+        }
+        function updateLike() {
+            fetch(`https://api.countapi.xyz/hit/${LIKE_NAMESPACE}/${LIKE_KEY}`, { method: 'GET' })
+                .then(res => res.json())
+                .then(data => {
+                    const likeSpan = document.getElementById('likeCount');
+                    if (likeSpan) likeSpan.innerText = data.value;
+                }).catch(() => {});
+        }
+        const likeBtn = document.getElementById('likeBtn');
+        if (likeBtn) {
+            const hasLiked = localStorage.getItem('hasLiked');
+            if (hasLiked) {
+                likeBtn.classList.add('disabled');
+                likeBtn.disabled = true;
+            } else {
+                likeBtn.addEventListener('click', () => {
+                    updateLike();
+                    localStorage.setItem('hasLiked', 'true');
+                    likeBtn.classList.add('disabled');
+                    likeBtn.disabled = true;
+                });
+            }
+            fetchLikeCount();
+        }
+    </script>
+
+    <!-- 不蒜子统计脚本（本地或远程） -->
+    <script async src="busuanzi.js"></script>
+</body>
+</html>

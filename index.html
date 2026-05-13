@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>我的空间 · Wennnnn</title>
+    
+    <style>
+        /* ========== 全局重置 & 梦幻背景 ========== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'SF Pro Text', 'PingFang SC', Roboto, system-ui, -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+            background-image: url('background1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+            min-height: 100vh;
+            /* 左右双栏布局：左侧头像+名字，右侧时钟+社交 */
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: center;
+            gap: 56px;
+            padding: 32px 40px;
+            backdrop-filter: brightness(0.98);
+        }
+
+        /* ========== 左侧面板：头像 + 名字（垂直居中靠左） ========== */
+	.left-panel {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            opacity: 0;
+            animation: fadeInUp 1.5s cubic-bezier(0.2, 0.9, 0.4, 1.1) forwards;
+    
+            transform: translateX(-20px);   /* 向左移动20像素，数值越大越靠左 */
+	}
+
+        /* 头像毛玻璃圆底座（完全保留原有质感） */
+        .avatar-glass {
+            width: 250px;
+            height: 250px;
+            background: rgba(255, 255, 255, 0.28);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.02), inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            transition: all 0.25s ease;
+        }
+
+        .avatar-glass:hover {
+            transform: scale(1.02);
+            background: rgba(255, 255, 255, 0.38);
+            backdrop-filter: blur(18px);
+            box-shadow: 0 20px 32px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 头像图片本身 */
+        .avatar {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 3px solid rgba(74, 144, 226, 0.85);
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s;
+            background: #f9fafc;
+        }
+
+        /* 名字 —— 位于头像正下方，优雅渐变文字，略微透明毛玻璃点缀 */
+        .name-below {
+            text-align: center;
+            margin: 0;
+            line-height: 1.2;
+        }
+
+        .name-below h1 {
+            font-size: 2.4rem;
+            font-weight: 650;
+            letter-spacing: -0.2px;
+            background: linear-gradient(135deg, #1f2b38, #2c3e50);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+            margin: 0;
+            padding: 0 6px;
+            display: inline-block;
+            backdrop-filter: blur(4px);
+            border-radius: 48px;
+        }
+
+        /* ========== 右侧主要内容区（时钟 + 社交图标） ========== */
+        .right-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+            max-width: 460px;
+            width: 100%;
+        }
+
+        /* 实时时钟 —— 毛玻璃数字卡片 */
+#live-date {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    padding: 6px 20px;
+    border-radius: 40px;
+    font-size: 1.2rem;
+    font-weight: 700;              /* 改成和时钟一样粗 */
+    font-family: 'Courier New', monospace;  /* 可选：和时钟字体一致 */
+    color: #2c3e50;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeInUp 1.5s ease forwards;
+    animation-delay: 0.6s;
+}
+#live-date:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-2px);
+}
+#live-date:active {
+    transform: scale(0.98);
+}
+        #live-clock {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.4);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-size: 2.6rem;
+            font-weight: 700;
+            font-family: 'Courier New', 'SF Mono', 'Fira Code', monospace;
+            letter-spacing: 4px;
+            color: #1e2f3f;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.05), inset 0 1px 0 rgba(255, 255, 255, 0.7);
+            width: auto;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards;
+            animation-delay: 0.4s;
+            transition: all 0.2s;
+        }
+
+#visit-count {
+    display: inline-block;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(8px);
+    padding: 6px 20px;
+    border-radius: 40px;
+    font-size: 1rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    color: #2c3e50;
+    margin-top: 8px;
+    letter-spacing: 1px;
+    opacity: 0;
+    animation: fadeInUp 1.5s ease forwards;
+    animation-delay: 0.4s;
+}
+        #live-clock:hover {
+            background: rgba(255, 255, 255, 0.55);
+            transform: translateY(-2px);
+        }
+
+        /* 社交图标区域（完全保留原有毛玻璃圆形风格） */
+        footer {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            opacity: 0;
+            animation: fadeInUp 1.5s ease forwards;
+            animation-delay: 0.7s;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 28px;
+            align-items: center;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* 每个图标的毛玻璃圆底托 */
+        .icon-link {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 5px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .icon-link svg {
+            width: 38px;
+            height: 38px;
+            transition: transform 0.2s;
+        }
+
+        .icon-link:hover {
+            background: rgba(255, 255, 255, 0.55);
+            transform: translateY(-6px) scale(1.05);
+            backdrop-filter: blur(14px);
+            box-shadow: 0 15px 25px -8px rgba(0, 0, 0, 0.2);
+        }
+
+        .icon-link:active {
+            transform: scale(1.2);
+            transition: transform 0.08s;
+        }
+
+        /* 平台个性色 (SVG填充色) */
+        .icon-link.github {
+            color: #24292e;
+        }
+	.music-player {
+    	    margin-top: 10px;
+	}
+.music-btn {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(10px);
+    border: none;
+    width: 65px;
+    height: 65px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    padding: 4px;  /* 留一点毛玻璃外圈 */
+}
+
+/* 唱片盘面（承载照片） */
+.record-disc {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    background: #2c3e50;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 照片本身，填满圆形 */
+.user-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  /* 保证照片比例不变且填满 */
+    display: block;
+}
+
+/* 旋转动画 */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.rotating .record-disc {
+    animation: spin 2s linear infinite;
+}
+	.music-btn:hover {
+            background: rgba(255, 255, 255, 0.55);
+            transform: scale(1.05);
+	}
+	.music-btn:active {
+            transform: scale(0.95);
+	}
+        .icon-link.bilibili {
+            color: #fb7299;
+        }
+        .icon-link.douyin {
+            color: #25f5fa;
+        }
+
+        /* 入场动画 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 左侧面板也增加淡入，比头像和名字更整体 */
+        .left-panel {
+            animation-delay: 0s;
+        }
+
+        /* ========== 优雅响应式：手机或窄屏时，头像名字在上方，时钟/图标在下方 ========== */
+        @media (max-width: 780px) {
+            body {
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 32px;
+                padding: 40px 24px;
+            }
+
+            .avatar-glass {
+                width: 130px;
+                height: 130px;
+            }
+
+            .avatar {
+                width: 92px;
+                height: 92px;
+            }
+
+            .name-below h1 {
+                font-size: 2rem;
+            }
+
+            #live-clock {
+                font-size: 2rem;
+                padding: 8px 24px;
+                letter-spacing: 2px;
+            }
+
+            .icon-link {
+                width: 62px;
+                height: 62px;
+            }
+
+            .icon-link svg {
+                width: 34px;
+                height: 34px;
+            }
+
+            .social-links {
+                gap: 24px;
+            }
+
+            .right-content {
+                gap: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                gap: 28px;
+                padding: 28px 16px;
+            }
+            .avatar-glass {
+                width: 112px;
+                height: 112px;
+            }
+            .avatar {
+                width: 80px;
+                height: 80px;
+            }
+            .name-below h1 {
+                font-size: 1.8rem;
+            }
+            #live-clock {
+                font-size: 1.6rem;
+                padding: 6px 18px;
+            }
+            .icon-link {
+                width: 54px;
+                height: 54px;
+            }
+            .icon-link svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
+
+        /* 背景柔光层 + 增加文字可读性 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 30% 20%, rgba(255, 255, 245, 0.08), rgba(0, 0, 0, 0.02));
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* 右侧增加轻微内边距，视觉平衡 */
+        .right-content {
+            backdrop-filter: blur(2px);
+            border-radius: 56px;
+            padding: 6px 12px;
+        }
+        
+        /* 左侧面板整体额外动画保持流畅 */
+	/* 让音乐按钮固定在右下角 */
+.music-player {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+    margin-top: 0;
+}
+/* 右上角统计卡片（访客 + 点赞） */
+.top-stats {
+    position: fixed;
+    top: 100px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    border-radius: 60px;
+    padding: 8px 18px;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    font-family: 'Courier New', monospace;
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #1e2f3f;
+    z-index: 1000;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s;
+}
+
+.top-stats span {
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+.like-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #e25555;
+    transition: transform 0.2s;
+    font-family: inherit;
+}
+
+.like-btn:hover {
+    transform: scale(1.05);
+}
+
+.like-btn:active {
+    transform: scale(0.95);
+}
+
+.like-btn.disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+/* 悬浮气泡导航栏 - 位于右上角 */
+.floating-nav {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 15px;
+    z-index: 1100;
+}
+
+.nav-bubble {
+    background: rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(12px);
+    border-radius: 60px;
+    padding: 10px 20px;
+    font-size: 1rem;
+    font-weight: 500;
+    color: #2c3e50;
+    text-decoration: none;
+    font-family: 'Segoe UI', system-ui;
+    transition: all 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    white-space: nowrap;
+}
+
+.nav-bubble:hover {
+    background: rgba(255, 255, 255, 0.55);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+}
+
+/* 移动端适配 */
+@media (max-width: 680px) {
+    .floating-nav {
+        top: 10px;
+        right: 10px;
+        gap: 8px;
+    }
+    .nav-bubble {
+        padding: 6px 14px;
+        font-size: 0.85rem;
+    }
+}
+
+/* 调整 body 顶部内边距，避免被固定导航栏遮挡 */
+body {
+    padding-top: 76px;
+}
+@media (min-width: 781px) {
+    body {
+        padding-top: 88px;
+    }
+}
+@media (max-width: 780px) {
+    body {
+        padding-top: 70px;
+    }
+}
+    </style>
+</head>
+<body>
+<!-- 玻璃导航栏 -->
+<!-- 悬浮气泡导航栏 -->
+<div class="floating-nav">
+    <a href="index.html" class="nav-bubble">主页</a>
+    <a href="projects.html" class="nav-bubble">项目</a>
+    <a href="blog.html" class="nav-bubble">博客</a>
+    <a href="about.html" class="nav-bubble">关于</a>
+</div>
+<div class="top-stats">
+    <div>访客数 <span id="busuanzi_value_site_pv">0</span></div>
+    <div class="like-area">
+        <button id="likeBtn" class="like-btn">❤️ <span id="likeCount">0</span></button>
+    </div>
+</div>
+    <!-- 左侧区域：圆形毛玻璃头像 + 正下方的名字 -->
+    <div class="left-panel">
+        <!-- 头像毛玻璃托底 -->
+        <div class="avatar-glass">
+            <img class="avatar" src="avatar.jpg" alt="Wennnnn头像">
+        </div>
+        <!-- 名字紧跟在头像下方（完全符合“名字放到头像的下面”） -->
+        <div class="name-below">
+            <h1>Wennnnn</h1>
+        </div>
+    </div>
+
+    <!-- 右侧区域：实时时钟 + 社交图标（GitHub/B站/抖音） -->
+    <div class="right-content">
+        <!-- 动态时钟 -->
+	<div id="live-date">----年--月--日</div>
+        <div id="live-clock">--:--:--</div>
+
+        <!-- 社交图标区 -->
+        <footer>
+            <div class="social-links">
+<!-- GitHub 链接（官方图标） -->
+<a href="https://github.com/Wennnnnzb" target="_blank" rel="noopener noreferrer" title="GitHub" class="icon-link github">
+    <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+    </svg>
+</a>
+
+<!-- B站 链接（官方图标） -->
+<a href="https://space.bilibili.com/3546934730033547?spm_id_from=333.33.0.0" target="_blank" rel="noopener noreferrer" title="Bilibili" class="icon-link bilibili">
+    <img src="https://www.bilibili.com/favicon.ico" width="38" height="38" alt="B站" style="width:38px; height:38px; border-radius:0;">
+</a>
+
+<!-- 抖音 链接（官方图标） -->
+<a href="https://www.douyin.com/user/self?enter_from=personal_homepage&enter_method=top_bar&from_tab_name=main" target="_blank" rel="noopener noreferrer" title="抖音" class="icon-link douyin">
+    <img src="https://www.douyin.com/favicon.ico" width="38" height="38" alt="抖音" style="width:38px; height:38px; border-radius:0;">
+</a>
+            </div>
+        </footer>
+    </div>
+
+<script>
+    // 实时时钟更新（24小时制）
+function updateClock() {
+    const now = new Date();
+    // 时间部分
+    const hours = String(now.getHours()).padStart(2, '0');
+    const minutes = String(now.getMinutes()).padStart(2, '0');
+    const seconds = String(now.getSeconds()).padStart(2, '0');
+    const clockDiv = document.getElementById('live-clock');
+    if (clockDiv) {
+        clockDiv.textContent = `${hours}:${minutes}:${seconds}`;
+    }
+    // 日期部分
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    const dateDiv = document.getElementById('live-date');
+    if (dateDiv) {
+        dateDiv.textContent = `${year}年${month}月${day}日`;
+    }
+}
+    updateClock();
+    setInterval(updateClock, 1000);
+</script>   <!-- 这里必须关闭第一个 script -->
+
+<!-- 音乐控制区（HTML 部分，放在 script 外面） -->
+<div class="music-player">
+    <button id="playMusicBtn" class="music-btn" title="播放/暂停背景音乐">
+        <div class="record-disc">
+            <img class="user-photo" src="avatar.jpg" alt="我的照片">
+        </div>
+    </button>
+    <audio id="bgMusic" loop src="frozen_heart.mp3"></audio>
+</div>
+
+<script>
+    // 音乐控制 JS
+    const playBtn = document.getElementById('playMusicBtn');
+    const audio = document.getElementById('bgMusic');
+    let isPlaying = false;
+
+    playBtn.addEventListener('click', () => {
+        if (isPlaying) {
+            audio.pause();
+            playBtn.classList.remove('rotating');
+            isPlaying = false;
+        } else {
+            audio.play().catch(e => console.log('需要用户交互'));
+            playBtn.classList.add('rotating');
+            isPlaying = true;
+        }
+    });
+    // 点赞功能（使用 countapi.xyz 永久计数，每人限一次）
+    const LIKE_NAMESPACE = 'wennnnn_space';
+    const LIKE_KEY = 'likes';
+
+    function fetchLikeCount() {
+        fetch(`https://api.countapi.xyz/get/${LIKE_NAMESPACE}/${LIKE_KEY}`)
+            .then(res => res.json())
+            .then(data => {
+                const likeSpan = document.getElementById('likeCount');
+                if (likeSpan) likeSpan.innerText = data.value;
+            })
+            .catch(e => console.log('点赞数获取失败', e));
+    }
+
+    function updateLike() {
+        fetch(`https://api.countapi.xyz/hit/${LIKE_NAMESPACE}/${LIKE_KEY}`, { method: 'GET' })
+            .then(res => res.json())
+            .then(data => {
+                const likeSpan = document.getElementById('likeCount');
+                if (likeSpan) likeSpan.innerText = data.value;
+            })
+            .catch(e => console.log('点赞失败', e));
+    }
+
+    const likeBtn = document.getElementById('likeBtn');
+    if (likeBtn) {
+        const hasLiked = localStorage.getItem('hasLiked');
+        if (hasLiked) {
+            likeBtn.classList.add('disabled');
+            likeBtn.disabled = true;
+        } else {
+            likeBtn.addEventListener('click', () => {
+                updateLike();
+                localStorage.setItem('hasLiked', 'true');
+                likeBtn.classList.add('disabled');
+                likeBtn.disabled = true;
+            });
+        }
+        fetchLikeCount();
+    }
+</script>
+
+<script async src="busuanzi.js"></script>
+
+</body>
+</html>
